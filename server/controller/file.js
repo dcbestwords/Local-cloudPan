@@ -54,10 +54,11 @@ router.post('/verify', async (ctx) => {
     ctx.body = { code: 200, shouldUpload: chunkHashList };
   } else {
     const chunkList = path.join(chunkDir, fileId);
-    if (!fs.pathExists(chunkList)) {
+    if (!(await fs.pathExists(chunkList))) {
       const chunkHashList = chunks.map((chunk) => chunk.chunkId);
       ctx.status = 200;
       ctx.body = { code: 200, shouldUpload: chunkHashList };
+      return;
     }
     const chunkFiles = await fs.readdir(chunkList);
     const chunkHashList = chunkFiles.map((file) => file.split('-')[1]);
@@ -99,7 +100,7 @@ router.post('/merge', async (ctx) => {
     if (exist) {
       filePath = await getNewFileName(filePath);
     }
-    const writeStream = fs.createWriteStream(filePath, { flags: 'a' });
+    const writeStream = fs.createWriteStream(filePath);
     for (const chunkFile of chunkFiles) {
       const chunkPath = path.join(chunkList, chunkFile);
       const buffer = fs.readFileSync(chunkPath);
@@ -176,12 +177,9 @@ router.get('/download', async (ctx) => {
     let { filenameList: fList, path: reqPath } = ctx.request.query;
     fList = fList.slice(1, -1).split(',');
     reqPath = path.join(config.global.publicPath, reqPath);
-    ctx.res.onerror = (err) => {
-      console.log('Error while sending file:', err);
-    };
-    const isDir = (filename) => fs.statSync(path.join(reqPath, filename)).isDirectory();
+    const isDir = async (filename) => (await fs.stat(path.join(reqPath, filename))).isDirectory();
     // 是否需要进行压缩下载
-    const shouldCompress = fList.length > 1 || isDir(fList[0]);
+    const shouldCompress = fList.length > 1 || (await isDir(fList[0]));
     if (shouldCompress) {
       ctx.status = 200;
       ctx.attachment(`${fList[0]} 等文件.zip`);
@@ -191,7 +189,7 @@ router.get('/download', async (ctx) => {
       });
       archive.on('error', function (err) {
         console.log(err);
-        ctx.throw(500, 'Internal Server Error');
+        ctx.throw(500, '文件压缩错误');
       });
 
       // 从Koa的响应对象的res中获取可写流，将其作为pipe的目标
@@ -201,7 +199,7 @@ router.get('/download', async (ctx) => {
       try {
         for (const filename of fList) {
           const filepath = path.join(reqPath, filename);
-          if (isDir(filename)) {
+          if (await isDir(filename)) {
             archive.directory(filepath, { name: filename });
           } else {
             // 可以在这里添加文件大小检查
@@ -218,7 +216,7 @@ router.get('/download', async (ctx) => {
     // 执行单个文件的下载
     else {
       ctx.attachment(fList[0]);
-      ctx.length = fs.statSync(path.join(reqPath, fList[0])).size;
+      ctx.length = (await fs.stat(path.join(reqPath, fList[0]))).size;
       await send(ctx, fList[0], { root: reqPath });
     }
   } catch (err) {
