@@ -12,4 +12,16 @@ const router = createRouter({
     };
   },
 });
+
+// 路由守卫：未登录跳登录页
+router.beforeEach((to, _from) => {
+  const token = localStorage.getItem('token');
+  if (to.path !== '/login' && !token) {
+    return '/login';
+  }
+  if (to.path === '/login' && token) {
+    return '/home';
+  }
+});
+
 export default router;
