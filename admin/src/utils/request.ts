@@ -14,11 +14,10 @@ let request = axios.create({
 });
 // 请求拦截器
 request.interceptors.request.use((config) => {
-  // 仓库中存在token时，发请求时设置token字段的请求头
-  // const userStore = useUserStore()
-  // if (userStore.token) {
-  //   config.headers.token = userStore.token
-  // }
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
 });
 
