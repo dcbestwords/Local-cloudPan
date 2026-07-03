@@ -66,7 +66,7 @@ function setupWebSocket(server) {
     // 发送当前在线用户列表给新连接的客户端
     ws.send(JSON.stringify({
       type: 'online_list',
-      users: server._onlineUsers.filter(u => u !== username),
+      users: onlineUsers.filter(u => u !== username),
     }));
   });
 
