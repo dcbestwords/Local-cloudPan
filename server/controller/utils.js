@@ -6,19 +6,19 @@ exports.generateUrl = function (req, filename, basePath = '/upload') {
 };
 
 /** 目录优先 */
-exports.sortByName = function (a, b) {
+function sortByName(a, b) {
   return b.isDir - a.isDir || (a.name > b.name ? 1 : -1);
-};
+}
 
 /** 大文件在前 */
-exports.sortBySize = function (a, b) {
+function sortBySize(a, b) {
   return b.size - a.size;
-};
+}
 
 /** 最近更新在前 */
-exports.sortByModified = function (a, b) {
+function sortByModified(a, b) {
   return b.modified - a.modified;
-};
+}
 
 async function getNewFileName(filePath) {
   const dir = path.dirname(filePath);
@@ -26,7 +26,6 @@ async function getNewFileName(filePath) {
   const base = path.basename(filePath, ext);
 
   let newFilePath = filePath;
-  let count = 1;
 
   // 匹配文件名中的括号数字
   const regex = /(.*?)(\((\d+)\))?$/;
@@ -44,4 +43,9 @@ async function getNewFileName(filePath) {
   return newFilePath;
 }
 
-exports.getNewFileName = getNewFileName;
+module.exports = {
+  sortByName,
+  sortBySize,
+  sortByModified,
+  getNewFileName,
+};
