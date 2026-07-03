@@ -2,7 +2,8 @@ const path = require('path');
 
 exports.global = {
   port: 9527,
-  publicPath: 'F://', // 代理的磁盘或者文件夹
+  publicPath: 'D://', // 代理的磁盘或者文件夹
+  jwtSecret: 'local-cloudpan-secret-key-2024',
 };
 
 exports.single = {
