@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const Router = require('@koa/router');
 const jwt = require('jsonwebtoken');
@@ -12,12 +12,12 @@ const DATA_FILE = path.join(__dirname, '../data/users.json');
 let registerLock = Promise.resolve();
 
 // 读写用户文件
-function readUsers() {
-  try { return JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8')); }
+async function readUsers() {
+  try { return JSON.parse(await fs.readFile(DATA_FILE, 'utf-8')); }
   catch { return []; }
 }
-function writeUsers(users) {
-  fs.writeFileSync(DATA_FILE, JSON.stringify(users, null, 2), 'utf-8');
+async function writeUsers(users) {
+  await fs.writeFile(DATA_FILE, JSON.stringify(users, null, 2), 'utf-8');
 }
 
 // 注册
@@ -45,7 +45,7 @@ router.post('/register', async (ctx) => {
   registerLock = new Promise(r => { resolve = r; });
   await prev;
   try {
-    const users = readUsers();
+    const users = await readUsers();
     if (users.find(u => u.username === username)) {
       ctx.status = 409;
       ctx.body = { msg: '用户名已存在' };
@@ -53,7 +53,7 @@ router.post('/register', async (ctx) => {
     }
     const hash = await bcrypt.hash(password, 10);
     users.push({ username, password: hash });
-    writeUsers(users);
+    await writeUsers(users);
     const token = jwt.sign({ username }, config.global.jwtSecret, { expiresIn: '7d' });
     ctx.body = { token, username };
   } finally {
@@ -80,7 +80,7 @@ router.post('/login', async (ctx) => {
     ctx.body = { msg: '密码至少需要4个字符' };
     return;
   }
-  const users = readUsers();
+  const users = await readUsers();
   const user = users.find(u => u.username === username);
   if (!user || !(await bcrypt.compare(password, user.password))) {
     ctx.status = 401;
