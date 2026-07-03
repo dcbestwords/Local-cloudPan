@@ -8,8 +8,10 @@
     "@koa/multer": "^3.0.2",
     "@koa/router": "^13.1.0",
     "archiver": "^6.0.1",
+    "bcryptjs": "^3.0.3",
     "fs-extra": "^11.2.0",
     "js-base64": "^3.7.5",
+    "jsonwebtoken": "^9.0.3",
     "koa": "^2.15.3",
     "koa-compress": "^5.1.1",
     "koa-etag": "^4.0.0",
@@ -17,7 +19,8 @@
     "koa-send": "^5.0.1",
     "koa-static": "^5.0.0",
     "multer": "^1.4.5-lts.1",
-    "sharp": "^0.33.2"
+    "sharp": "^0.33.2",
+    "ws": "^8.21.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.3"
