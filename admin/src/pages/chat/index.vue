@@ -66,6 +66,7 @@
 
 <script setup lang="ts">
 import { ref, watch, nextTick } from 'vue';
+import { ElMessage } from 'element-plus';
 import { useWebSocket } from '@/composables/useWebSocket';
 import { useChatDB } from '@/composables/useChatDB';
 
@@ -100,6 +101,10 @@ function switchContact(username: string) {
 async function send() {
   const content = newMessage.value.trim();
   if (!content || !curContact.value) return;
+  if (!isConnected.value) {
+    ElMessage.warning('未连接到服务器，请稍后重试');
+    return;
+  }
 
   const msg: Message = {
     contact: curContact.value,
@@ -123,9 +128,6 @@ onMessage(({ from, content, time }) => {
   }
   // 即使不是当前联系人也要存到 DB（已在 useWebSocket 中处理），此处只需更新 UI
   // ponytail: 如果消息来自当前联系人则展示，否则只落 DB 不展示（下次切换时加载）
-  if (from !== curContact.value) {
-    // 提示有新消息 - 可在后续版本添加通知
-  }
 });
 </script>
 

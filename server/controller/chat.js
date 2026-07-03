@@ -3,12 +3,14 @@ const url = require('url');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 
+let onlineUsers = [];
+
 function setupWebSocket(server) {
   const wss = new WebSocket.Server({ server });
   const clients = new Map(); // username -> WebSocket
 
   // 共享在线列表给 auth REST 端点
-  server._onlineUsers = [];
+  onlineUsers = [];
 
   function broadcast(data) {
     const msg = JSON.stringify(data);
@@ -30,13 +32,10 @@ function setupWebSocket(server) {
       return;
     }
 
-    // 踢掉同一用户的旧连接
-    if (clients.has(username)) {
-      clients.get(username).close();
-    }
-
+    // Remove old entry before adding new
+    onlineUsers = onlineUsers.filter(u => u !== username);
     clients.set(username, ws);
-    server._onlineUsers.push(username);
+    onlineUsers.push(username);
     broadcast({ type: 'online', username });
 
     ws.on('message', (raw) => {
@@ -60,7 +59,7 @@ function setupWebSocket(server) {
 
     ws.on('close', () => {
       clients.delete(username);
-      server._onlineUsers = server._onlineUsers.filter(u => u !== username);
+      onlineUsers = onlineUsers.filter(u => u !== username);
       broadcast({ type: 'offline', username });
     });
 
@@ -74,4 +73,5 @@ function setupWebSocket(server) {
   console.log('WebSocket server ready');
 }
 
+setupWebSocket.onlineUsers = () => onlineUsers;
 module.exports = setupWebSocket;

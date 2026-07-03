@@ -1,4 +1,4 @@
-import { ref, type Ref } from 'vue';
+import { ref } from 'vue';
 import { useChatDB } from './useChatDB';
 
 const { saveMessage } = useChatDB();
@@ -52,9 +52,10 @@ function connect() {
     } catch { /* ignore */ }
   };
 
-  ws.onclose = () => {
+  ws.onclose = (event) => {
     isConnected.value = false;
-    // ponytail: 指数退避重连，最大 5s 间隔
+    // Don't reconnect on auth failures (4001 = invalid token)
+    if (event.code === 4001) return;
     if (reconnectTimer) clearTimeout(reconnectTimer);
     reconnectTimer = setTimeout(connect, 1000 + Math.random() * 4000);
   };

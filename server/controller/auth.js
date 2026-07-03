@@ -4,9 +4,12 @@ const Router = require('@koa/router');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const config = require('../config');
+const chat = require('./chat');
 
 const router = new Router({ prefix: '/api/auth' });
 const DATA_FILE = path.join(__dirname, '../data/users.json');
+
+let registerLock = Promise.resolve();
 
 // 读写用户文件
 function readUsers() {
@@ -19,28 +22,64 @@ function writeUsers(users) {
 
 // 注册
 router.post('/register', async (ctx) => {
-  const { username, password } = ctx.request.body;
+  const username = (ctx.request.body.username || '').trim();
+  const password = ctx.request.body.password || '';
   if (!username || !password) {
     ctx.status = 400;
     ctx.body = { msg: '用户名和密码不能为空' };
     return;
   }
-  const users = readUsers();
-  if (users.find(u => u.username === username)) {
-    ctx.status = 409;
-    ctx.body = { msg: '用户名已存在' };
+  if (username.length < 2 || username.length > 30) {
+    ctx.status = 400;
+    ctx.body = { msg: '用户名需要2-30个字符' };
     return;
   }
-  const hash = await bcrypt.hash(password, 10);
-  users.push({ username, password: hash });
-  writeUsers(users);
-  const token = jwt.sign({ username }, config.global.jwtSecret, { expiresIn: '7d' });
-  ctx.body = { token, username };
+  if (password.length < 4) {
+    ctx.status = 400;
+    ctx.body = { msg: '密码至少需要4个字符' };
+    return;
+  }
+  // Serialize registrations to prevent race conditions
+  const prev = registerLock;
+  let resolve;
+  registerLock = new Promise(r => { resolve = r; });
+  await prev;
+  try {
+    const users = readUsers();
+    if (users.find(u => u.username === username)) {
+      ctx.status = 409;
+      ctx.body = { msg: '用户名已存在' };
+      return;
+    }
+    const hash = await bcrypt.hash(password, 10);
+    users.push({ username, password: hash });
+    writeUsers(users);
+    const token = jwt.sign({ username }, config.global.jwtSecret, { expiresIn: '7d' });
+    ctx.body = { token, username };
+  } finally {
+    resolve();
+  }
 });
 
 // 登录
 router.post('/login', async (ctx) => {
-  const { username, password } = ctx.request.body;
+  const username = (ctx.request.body.username || '').trim();
+  const password = ctx.request.body.password || '';
+  if (!username || !password) {
+    ctx.status = 400;
+    ctx.body = { msg: '用户名和密码不能为空' };
+    return;
+  }
+  if (username.length < 2 || username.length > 30) {
+    ctx.status = 400;
+    ctx.body = { msg: '用户名需要2-30个字符' };
+    return;
+  }
+  if (password.length < 4) {
+    ctx.status = 400;
+    ctx.body = { msg: '密码至少需要4个字符' };
+    return;
+  }
   const users = readUsers();
   const user = users.find(u => u.username === username);
   if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -70,10 +109,9 @@ function authMiddleware(ctx, next) {
   }
 }
 
-// 获取在线用户列表（需要登录，从 chat 模块的在线列表读取）
-// 通过 app.context 共享在线用户状态
+// 获取在线用户列表（需要登录，从 chat 模块导入 getter）
 router.get('/users', authMiddleware, (ctx) => {
-  const onlineUsers = ctx.app._onlineUsers || [];
+  const onlineUsers = chat.onlineUsers ? chat.onlineUsers() : [];
   ctx.body = onlineUsers.filter(u => u !== ctx.state.user.username);
 });
 
