@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 const config = require('../config');
 const chat = require('./chat');
 
-const router = new Router({ prefix: '/api/auth' });
+const router = new Router({ prefix: '/auth' });
 const DATA_FILE = path.join(__dirname, '../data/users.json');
 
 let registerLock = Promise.resolve();
