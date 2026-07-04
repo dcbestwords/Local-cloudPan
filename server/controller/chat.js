@@ -33,7 +33,7 @@ function setupWebSocket(server) {
     }
 
     // Remove old entry before adding new
-    onlineUsers = onlineUsers.filter(u => u !== username);
+    onlineUsers = onlineUsers.filter((u) => u !== username);
     clients.set(username, ws);
     onlineUsers.push(username);
     broadcast({ type: 'online', username });
@@ -44,35 +44,46 @@ function setupWebSocket(server) {
         if (msg.type === 'message' && msg.to) {
           const target = clients.get(msg.to);
           if (target && target.readyState === WebSocket.OPEN) {
-            target.send(JSON.stringify({
-              type: 'message',
-              from: username,
-              content: msg.content,
-              time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
-            }));
+            target.send(
+              JSON.stringify({
+                type: 'message',
+                from: username,
+                content: msg.content,
+                time: new Date().toLocaleTimeString('zh-CN', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                }),
+              }),
+            );
           } else if (msg.msgId != null) {
             // 对方不在线，通知发送方
-            ws.send(JSON.stringify({
-              type: 'message_status',
-              msgId: msg.msgId,
-              status: 'failed',
-            }));
+            ws.send(
+              JSON.stringify({
+                type: 'message_status',
+                msgId: msg.msgId,
+                status: 'failed',
+              }),
+            );
           }
         }
-      } catch { /* 忽略格式错误 */ }
+      } catch {
+        /* 忽略格式错误 */
+      }
     });
 
     ws.on('close', () => {
       clients.delete(username);
-      onlineUsers = onlineUsers.filter(u => u !== username);
+      onlineUsers = onlineUsers.filter((u) => u !== username);
       broadcast({ type: 'offline', username });
     });
 
     // 发送当前在线用户列表给新连接的客户端
-    ws.send(JSON.stringify({
-      type: 'online_list',
-      users: onlineUsers.filter(u => u !== username),
-    }));
+    ws.send(
+      JSON.stringify({
+        type: 'online_list',
+        users: onlineUsers.filter((u) => u !== username),
+      }),
+    );
   });
 
   console.log('WebSocket server ready');

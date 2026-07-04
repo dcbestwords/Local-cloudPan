@@ -41,7 +41,7 @@
 
   .main-container {
     width: 100%;
-    padding: 2rem;
+    padding: 0 2rem;
     text-align: center;
   }
 

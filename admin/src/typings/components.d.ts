@@ -28,7 +28,6 @@ declare module 'vue' {
     ElProgress: typeof import('element-plus/es')['ElProgress']
     ElTable: typeof import('element-plus/es')['ElTable']
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
-    ElTooltip: typeof import('element-plus/es')['ElTooltip']
     'IMynaui:chatMessages': typeof import('~icons/mynaui/chat-messages')['default']
     'IMynaui:checkCircle': typeof import('~icons/mynaui/check-circle')['default']
     'IMynaui:cog': typeof import('~icons/mynaui/cog')['default']

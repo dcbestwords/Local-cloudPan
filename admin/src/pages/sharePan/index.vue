@@ -497,6 +497,7 @@
   .pan-wrapper {
     border-radius: 10px;
     max-width: 100%;
+    padding: 2rem 0;
 
     .tabbar-container {
       margin-bottom: 1rem;
