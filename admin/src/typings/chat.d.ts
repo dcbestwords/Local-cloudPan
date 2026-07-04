@@ -9,4 +9,5 @@ interface Message {
   content: string;
   time: string;
   isSelf: boolean;
+  status?: 'sent' | 'failed';
 }

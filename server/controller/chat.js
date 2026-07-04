@@ -43,16 +43,21 @@ function setupWebSocket(server) {
         const msg = JSON.parse(raw);
         if (msg.type === 'message' && msg.to) {
           const target = clients.get(msg.to);
-          const payload = JSON.stringify({
-            type: 'message',
-            from: username,
-            content: msg.content,
-            time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
-          });
           if (target && target.readyState === WebSocket.OPEN) {
-            target.send(payload);
+            target.send(JSON.stringify({
+              type: 'message',
+              from: username,
+              content: msg.content,
+              time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+            }));
+          } else if (msg.msgId != null) {
+            // 对方不在线，通知发送方
+            ws.send(JSON.stringify({
+              type: 'message_status',
+              msgId: msg.msgId,
+              status: 'failed',
+            }));
           }
-          // 不在线则静默丢弃
         }
       } catch { /* 忽略格式错误 */ }
     });

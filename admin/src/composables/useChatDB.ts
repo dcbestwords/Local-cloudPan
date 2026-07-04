@@ -20,5 +20,8 @@ export function useChatDB() {
   const saveMessage = (msg: Message): Promise<number> =>
     db.messages.add(msg);
 
-  return { getMessages, saveMessage };
+  const updateMessageStatus = (id: number, status: 'sent' | 'failed') =>
+    db.messages.update(id, { status });
+
+  return { getMessages, saveMessage, updateMessageStatus };
 }
