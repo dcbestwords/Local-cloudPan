@@ -3,7 +3,6 @@
     <!-- 主视图 -->
     <ContextMenu :menu="mainMenu" @select="handleSelect">
       <div class="pan-wrapper">
-        <h1 class="pan-title">我的云盘</h1>
         <!-- tabbar -->
         <div class="tabbar-container">
           <Tabbar
@@ -23,7 +22,7 @@
             row-key="id"
             ref="tableRef"
             show-overflow-tooltip
-            max-height="calc(100vh - 12rem)"
+            max-height="calc(100vh - 14.5rem)"
             :row-style="{ height: '50px' }"
             v-loading="loading"
             @row-click="toggleCheck"
@@ -88,7 +87,7 @@
           :menu="fileMenu"
           showarea=".grid-view .file-item"
           @select="handleSelect">
-          <el-scrollbar ref="gridScrollContainerRef" max-height="calc(100vh - 12rem)">
+          <el-scrollbar ref="gridScrollContainerRef" max-height="calc(100vh - 14.5rem)">
             <div class="grid-view" :class="{ empty: allDate.length === 0 }" ref="gridViewWrapper">
               <GridView
                 ref="gridRef"
@@ -155,7 +154,7 @@
   const fileHref = computed(() => {
     return new URL(
       `api/download?filenameList=[${filenameList.value}]&path=${route.query.path ? route.query.path : ''}`,
-      window.location.origin
+      window.location.origin,
     ).href;
   });
 
@@ -375,7 +374,7 @@
               confirmButtonText: '确定',
               cancelButtonText: '取消',
               type: 'warning',
-            }
+            },
           );
           result = await createDir(route.query.path as string, newName);
         } catch {
@@ -473,7 +472,7 @@
     () => route.query.path,
     (newPath) => {
       getFileList(newPath as string);
-    }
+    },
   );
 
   // #region 变化ScrollContainerRef的值
@@ -482,7 +481,7 @@
       // @ts-ignore
       scrollContainerRef.value = tableRef.value?.$refs.scrollBarRef.wrapRef;
       wrapper.value = (scrollContainerRef.value as HTMLElement).querySelector(
-        '.ep-scrollbar__view'
+        '.ep-scrollbar__view',
       );
     } else {
       scrollContainerRef.value = gridScrollContainerRef.value?.wrapRef;
@@ -498,14 +497,7 @@
   .pan-wrapper {
     border-radius: 10px;
     max-width: 100%;
-    max-height: calc(100vh - 4rem);
-    .pan-title {
-      font-size: 1.5rem;
-      line-height: 2rem;
-      font-weight: 700;
-      text-align: left;
-      margin-bottom: 1.5rem;
-    }
+
     .tabbar-container {
       margin-bottom: 1rem;
     }
@@ -562,7 +554,7 @@
       font-size: 1rem;
       line-height: 1rem;
       text-align: left;
-      margin-top: 0.8rem;
+      margin-top: 0.5rem;
     }
   }
   .download-container {
