@@ -68,7 +68,7 @@
 <script setup lang="ts">
   import { reactive, watch } from 'vue';
   import { ElMessage } from 'element-plus';
-  import type { PostForm } from '../types';
+  import type { ShareForm } from '../types';
   import { emptyPostForm } from '../types';
 
   const CATEGORIES = [
@@ -85,10 +85,10 @@
   const props = defineProps<{ visible: boolean }>();
   const emit = defineEmits<{
     'update:visible': [value: boolean];
-    submit: [form: PostForm];
+    submit: [form: ShareForm];
   }>();
 
-  const form = reactive<PostForm>(emptyPostForm());
+  const form = reactive<ShareForm>(emptyPostForm());
 
   // 每次打开重置表单
   watch(

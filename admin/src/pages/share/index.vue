@@ -36,7 +36,7 @@
   import ShopCardGrid from './components/ShopCardGrid.vue';
   import PublishDialog from './components/PublishDialog.vue';
   import ShopDetailDialog from './components/ShopDetailDialog.vue';
-  import type { Shop, PostForm } from './types';
+  import type { Shop, ShareForm } from './types';
 
   defineOptions({ name: 'share' });
 
@@ -198,7 +198,7 @@
     newComment.value = '';
   }
 
-  function handlePublish(form: PostForm) {
+  function handlePublish(form: ShareForm) {
     const shop: Shop = {
       id: Date.now(),
       name: form.name,
@@ -232,7 +232,7 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    padding: 1.25rem 2rem;
+    padding: 1.25rem 2rem 2rem;
     flex-shrink: 0;
   }
   .page-header h2 {

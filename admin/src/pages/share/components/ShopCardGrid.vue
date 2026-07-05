@@ -1,62 +1,66 @@
 <template>
   <div class="page-body">
-    <div class="card-grid">
-      <el-card
-        v-for="shop in shops"
-        :key="shop.id"
-        class="shop-card"
-        @click="$emit('click', shop)"
-        :body-style="{ padding: '0px', display: 'flex', flexDirection: 'column', height: '100%' }"
-        shadow="never">
-        <div
-          class="card-image"
-          :style="shop.cover ? { backgroundImage: `url(${shop.cover})` } : {}">
-          <div v-if="!shop.cover" class="card-image-placeholder" />
-          <div class="category-badge">{{ shop.category }}</div>
-        </div>
+    <el-scrollbar max-height="48rem">
+      <div class="card-grid">
+        <el-card
+          v-for="shop in shops"
+          :key="shop.id"
+          class="shop-card"
+          @click="$emit('click', shop)"
+          :body-style="{ padding: '0px', display: 'flex', flexDirection: 'column', height: '100%' }"
+          shadow="never">
+          <div
+            class="card-image"
+            :style="shop.cover ? { backgroundImage: `url(${shop.cover})` } : {}">
+            <div v-if="!shop.cover" class="card-image-placeholder" />
+            <div class="category-badge">{{ shop.category }}</div>
+          </div>
 
-        <div class="card-body">
-          <div class="card-title-row">
-            <h3>{{ shop.name }}</h3>
-            <div class="rating">
-              <el-icon color="#f97316" :size="14"><StarFilled /></el-icon>
-              <span>{{ shop.rating }}</span>
+          <div class="card-body">
+            <div class="card-title-row">
+              <h3>{{ shop.name }}</h3>
+              <div class="rating">
+                <el-icon color="#f97316" :size="14"><StarFilled /></el-icon>
+                <span>{{ shop.rating }}</span>
+              </div>
             </div>
-          </div>
 
-          <div class="card-meta">
-            <span>
-              <el-icon :size="14"><Location /></el-icon>
-              {{ shop.distance }}
-            </span>
-            <span>{{ shop.price }}</span>
-          </div>
-
-          <div class="card-tags">
-            <el-tag v-for="tag in shop.tags" :key="tag" size="small" type="info">{{ tag }}</el-tag>
-          </div>
-
-          <p class="card-desc">"{{ shop.description }}"</p>
-
-          <div class="card-footer">
-            <div class="author">
-              <el-avatar :size="24" class="author-avatar">{{ shop.author.charAt(0) }}</el-avatar>
-              <span>{{ shop.author }} · {{ shop.date }}</span>
-            </div>
-            <div class="stats">
-              <span class="stat-item" @click.stop="$emit('like', shop)">
-                <el-icon :size="16"><Pointer /></el-icon>
-                {{ shop.likes }}
+            <div class="card-meta">
+              <span>
+                <el-icon :size="14"><Location /></el-icon>
+                {{ shop.distance }}
               </span>
-              <span class="stat-item">
-                <el-icon :size="16"><ChatLineRound /></el-icon>
-                {{ shop.comments }}
-              </span>
+              <span>{{ shop.price }}</span>
+            </div>
+
+            <div class="card-tags">
+              <el-tag v-for="tag in shop.tags" :key="tag" size="small" type="info">
+                {{ tag }}
+              </el-tag>
+            </div>
+
+            <p class="card-desc">"{{ shop.description }}"</p>
+
+            <div class="card-footer">
+              <div class="author">
+                <el-avatar :size="24" class="author-avatar">{{ shop.author.charAt(0) }}</el-avatar>
+                <span>{{ shop.author }} · {{ shop.date }}</span>
+              </div>
+              <div class="stats">
+                <span class="stat-item" @click.stop="$emit('like', shop)">
+                  <el-icon :size="16"><Pointer /></el-icon>
+                  {{ shop.likes }}
+                </span>
+                <span class="stat-item">
+                  <el-icon :size="16"><ChatLineRound /></el-icon>
+                  {{ shop.comments }}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-      </el-card>
-    </div>
+        </el-card>
+      </div>
+    </el-scrollbar>
 
     <el-empty v-if="!shops.length" description="没有找到匹配的探店" />
   </div>
@@ -76,14 +80,12 @@
 <style scoped lang="scss">
   .page-body {
     flex: 1;
-    overflow-y: auto;
-    padding: 2rem 0;
+    padding: 0 0 2rem;
     .card-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(auto-fill, minmax(20rem, 27rem));
       gap: 1.5rem;
-      max-width: 80rem;
-      margin: 0 auto;
+      place-content: center;
       .shop-card {
         border-radius: 0.75rem;
         overflow: hidden;
@@ -170,9 +172,13 @@
           .card-desc {
             margin: 0 0 1rem;
             font-size: 0.875rem;
-            color: var(--ep-text-color-regular);
             line-height: 1.6;
+            color: var(--ep-text-color-regular);
             flex: 1;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
           }
           .card-footer {
             padding-top: 1rem;

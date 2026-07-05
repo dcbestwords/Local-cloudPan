@@ -22,7 +22,7 @@ export interface Shop {
   isLiked?: boolean;
 }
 
-export interface PostForm {
+export interface ShareForm {
   name: string;
   category: string;
   price: string;
@@ -33,7 +33,7 @@ export interface PostForm {
   description: string;
 }
 
-export function emptyPostForm(): PostForm {
+export function emptyPostForm(): ShareForm {
   return {
     name: '',
     category: '',
