@@ -34,5 +34,14 @@ export interface PostForm {
 }
 
 export function emptyPostForm(): PostForm {
-  return { name: '', category: '', price: '', distance: '', rating: 0, tags: [], cover: '', description: '' };
+  return {
+    name: '',
+    category: '',
+    price: '',
+    distance: '',
+    rating: 0,
+    tags: [],
+    cover: '',
+    description: '',
+  };
 }

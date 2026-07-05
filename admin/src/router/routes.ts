@@ -38,6 +38,12 @@ export const constantRoute: RouteRecordRaw[] = [
         component: () => import('@/pages/chat/index.vue'),
         meta: { title: '聊天界面', subtitle: '1对1私聊' },
       },
+      {
+        path: '/share',
+        name: 'share',
+        component: () => import('@/pages/share/index.vue'),
+        meta: { title: '探店分享', subtitle: '发现教研室周边的美食与好去处' },
+      },
     ],
   },
   {

@@ -13,6 +13,10 @@
         <el-icon :size="30" style="width: 100%"><i-mynaui:chat-messages /></el-icon>
         <template #title>聊天</template>
       </el-menu-item>
+      <el-menu-item index="/share" class="h-4">
+        <el-icon :size="30" style="width: 100%"><i-mynaui:store /></el-icon>
+        <template #title>探店</template>
+      </el-menu-item>
     </div>
 
     <div class="bottom-nav">
