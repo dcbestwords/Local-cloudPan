@@ -5,7 +5,7 @@
     width="1000px"
     align-center
     :show-close="false">
-    <div class="detail-container" v-if="shop">
+    <div class="detail-container" v-if="shop" :key="shop.id">
       <button @click="$emit('update:visible', false)" class="detail-close-btn">
         <el-icon :size="20"><Close /></el-icon>
       </button>
